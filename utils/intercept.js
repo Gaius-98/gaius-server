@@ -1,16 +1,19 @@
-const intercept = (err,result,opt) =>{
-    if(err){
-        return  {
-            code:500,
-            data:{},
-            msg:err
-        }
-    }else{
-        return {
-            code:0,
-            data:result,
-            msg:opt?.msg || '查询成功'
-        }
-    }
+const intercept = (promise,opt) =>{
+    return  new Promise((resolve,reject)=>{
+        promise.then(res=>{
+            resolve({
+                code:0,
+                data:res,
+                msg:opt?.msg || '查询成功'
+            })
+        })
+        .catch(err=>{
+            resolve({
+                code:500,
+                data:{},
+                msg:JSON.stringify(err)
+            })
+        })
+    })
 }
 module.exports = intercept
