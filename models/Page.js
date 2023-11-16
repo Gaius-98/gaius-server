@@ -10,10 +10,10 @@ const createPage = (sequelize) =>{
       type: DataTypes.STRING,
     },
     width:{
-      type:DataTypes.STRING,
+      type:DataTypes.NUMBER,
     },
     height:{
-        type:DataTypes.STRING,
+        type:DataTypes.NUMBER,
     },
     img:{
         type:DataTypes.TEXT,
