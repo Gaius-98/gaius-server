@@ -21,7 +21,7 @@ const createPage = (sequelize) =>{
     del:{
       type:DataTypes.NUMBER
     },
-    config:{
+    componentData:{
       type:DataTypes.TEXT
     },
     createTime:{

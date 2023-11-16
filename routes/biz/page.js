@@ -17,13 +17,13 @@ const { Op } = require("sequelize");
  * @apiSuccess {Number}   rows.width 页面宽度
  * @apiSuccess {Number}   rows.height 页面高度
  * @apiSuccess {String}   rows.img 页面预览图
- * @apiSuccess {String}   rows.config 页面配置
+ * @apiSuccess {String}   rows.componentData 页面配置
  * @apiSuccess {Number}   count 页面配置总数
  */
 router.post('/list',function(req, res, next){
     const { keyword,pageSize,pageNumber} = req.body
     intercept(cat.Page.findAndCountAll({
-      attributes:['id','name','width','height','img','config'],
+      attributes:['id','name','width','height','img','componentData'],
       limit:Number(pageSize),
       offset:(pageNumber - 1) * pageSize,
       where:{
@@ -52,14 +52,14 @@ router.post('/list',function(req, res, next){
  * @apiBody {Number}  width   
  * @apiBody {Number}  height   
  * @apiBody {String}  img   
- * @apiBody {String}  config   
+ * @apiBody {String}  componentData   
  */
 router.post('/save',(req,res,next)=>{
-  const { name,width,height,img,config } = req.body
-  let configStr = JSON.stringify(config)
+  const { name,width,height,img,componentData } = req.body
+  let configStr = JSON.stringify(componentData)
   intercept(cat.Page.create({
     name,
-    config:configStr,
+    componentData:configStr,
     width,
     height,
     img,
@@ -82,13 +82,13 @@ router.post('/save',(req,res,next)=>{
  * @apiSuccess {Number}   height 页面高度
  * @apiSuccess {String}   name 页面名称
  * @apiSuccess {String}   img 页面预览图
- * @apiSuccess {Object}   config 页面配置
+ * @apiSuccess {Object}   componentData 页面配置
  */
 router.post('/detail',(req,res,next)=>{
   const { id } = req.body
   intercept(cat.Page.findByPk(id)).then(data=>{
     if(data.code == 0){
-      data.data.config = JSON.parse(data.data.config)
+      data.data.componentData = JSON.parse(data.data.componentData)
     }
     res.send(data)
   })
@@ -102,14 +102,14 @@ router.post('/detail',(req,res,next)=>{
  * @apiBody {Number}  width   
  * @apiBody {Number}  height   
  * @apiBody {String}  img   
- * @apiBody {String}  config  
+ * @apiBody {String}  componentData  
  */
 router.post('/update',(req,res,next)=>{
-  const { name,width,height,img,config,id } = req.body
-  let configStr = JSON.stringify(config)
+  const { name,width,height,img,componentData,id } = req.body
+  let configStr = JSON.stringify(componentData)
   intercept(cat.Page.update({
     name,
-    config:configStr,
+    componentData:configStr,
     width,
     height,
     img,
