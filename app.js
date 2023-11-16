@@ -10,6 +10,7 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
 // 请求拦截
 router.use((req,res,next)=>{
   next()
@@ -21,12 +22,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'apidoc')));
 routerInfo.forEach((val,key)=>{
-  console.log(`路由模块---${key}---已引入😊`)
   app.use(key, val)
+  console.log(`路由模块---${key}---已引入😊`)
 })
 
-// app.use('/users', usersRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
