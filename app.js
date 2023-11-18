@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors')
 // 路由信息
 var routerInfo = require('./utils/autoRouter')
 const router = express.Router()
@@ -11,6 +12,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+app.use(cors())
 // 请求拦截
 router.use((req,res,next)=>{
   next()
@@ -18,7 +20,7 @@ router.use((req,res,next)=>{
 app.use(router)
 
 app.use(logger('dev'));
-app.use(express.json());
+app.use(express.json({limit:'50mb'}));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
