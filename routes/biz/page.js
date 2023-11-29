@@ -23,7 +23,7 @@ const { Op } = require("sequelize");
 router.post('/list',function(req, res, next){
     const { keyword,pageSize,pageNumber} = req.body
     intercept(cat.Page.findAndCountAll({
-      attributes:['id','name','width','height','img','componentData'],
+      attributes:['id','name','width','height','img'],
       limit:Number(pageSize),
       offset:(pageNumber - 1) * pageSize,
       where:{
