@@ -18,6 +18,9 @@ const createForm = (sequelize) =>{
     formProp:{
       type:DataTypes.STRING
     },
+    img:{
+      type:DataTypes.TEXT
+    },
     createTime:{
       type:DataTypes.DATE(6),
       defaultValue: DataTypes.NOW

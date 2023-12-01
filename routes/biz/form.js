@@ -21,7 +21,7 @@ const { Op } = require("sequelize");
 router.post('/list',function(req, res, next){
     const { keyword,pageSize,pageNumber} = req.body
     intercept(cat.Form.findAndCountAll({
-      attributes:['id','list','formProp','name'],
+      attributes:['id','list','formProp','name','img'],
       limit:Number(pageSize),
       offset:(pageNumber - 1) * pageSize,
       where:{
@@ -48,16 +48,18 @@ router.post('/list',function(req, res, next){
  * 
  * @apiBody {String} name
  * @apiBody {String}  list   
- * @apiBody {String} formProp   
+ * @apiBody {String} formProp 
+ * @apiBody {String} img     
  */
 router.post('/save',(req,res,next)=>{
-  const { name,list,formProp } = req.body
+  const { name,list,formProp,img } = req.body
   let configStr = JSON.stringify(list)
   let formConfigStr = JSON.stringify(formProp)
   intercept(cat.Form.create({
     name,
     list:configStr,
     formProp:formConfigStr,
+    img,
     del:0, 
   }),{
     msg:'保存成功'
@@ -75,7 +77,7 @@ router.post('/save',(req,res,next)=>{
  * @apiSuccess {String}   id   表单id
  * @apiSuccess {Object}   list 表单组件构成
  * @apiSuccess {Object}   formProp 表单整体配置
- * @apiSuccess {String}   name 表单名称
+ * @apiSuccess {String}   name 表单名称  
  */
 router.post('/detail',(req,res,next)=>{
   const { id } = req.body
@@ -94,16 +96,18 @@ router.post('/detail',(req,res,next)=>{
  * @apiBody {Number} id
  * @apiBody {String} name
  * @apiBody {String}  list   
- * @apiBody {String} formProp   
+ * @apiBody {String} formProp 
+ * @apiBody {String} img    
  */
 router.post('/update',(req,res,next)=>{
-  const { name,list,id,formProp } = req.body
+  const { name,list,id,formProp,img } = req.body
   let configStr = JSON.stringify(list)
   let formConfigStr = JSON.stringify(formProp)
   intercept(cat.Form.update({
     name,
     list:configStr,
     formProp:formConfigStr,
+    img
   },{
     where:{
       id:{
