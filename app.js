@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors')
+var jwt = require('./utils/jwt')
 // 路由信息
 var routerInfo = require('./utils/autoRouter')
 const router = express.Router()
@@ -11,20 +12,35 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-
 app.use(cors())
-// 请求拦截
-router.use((req,res,next)=>{
-  next()
-})
-app.use(router)
-
 app.use(logger('dev'));
 app.use(express.json({limit:'50mb'}));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'apidoc')));
+// 请求拦截
+router.use((req,res,next)=>{
+  const whiteList  = [
+    '/sys/user/login',
+    '/sys/user/register',
+    '/sys/user/captcha',
+    '/doc',
+    '/assets'
+  ]
+  const { url } = req
+  if(whiteList.some(item=>(url.includes(item)))){
+    next()
+  }else {
+    jwt.verify(req.cookies.gaiusToken).then(()=>{
+      next()
+    }).catch(err=>{
+      res.send(err)
+    })
+  }
+  
+})
+app.use(router)
+app.use('/assets',express.static(path.join(__dirname, 'public')));
+app.use('/doc',express.static(path.join(__dirname, 'apidoc')));
 routerInfo.forEach((val,key)=>{
   app.use(key, val)
   console.log(`路由模块---${key}---已引入😊`)
