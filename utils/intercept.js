@@ -11,7 +11,7 @@ const intercept = (promise,opt) =>{
             resolve({
                 code:500,
                 data:{},
-                msg:JSON.stringify(err)
+                msg:opt?.errMsg || JSON.stringify(err)
             })
         })
     })
