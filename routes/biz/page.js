@@ -20,9 +20,9 @@ const { Op } = require("sequelize");
  * @apiSuccess {String}   rows.componentData 页面配置
  * @apiSuccess {Number}   count 页面配置总数
  */
-router.post('/list',function(req, res, next){
+router.post('/list',async (req, res, next)=>{
     const { keyword,pageSize,pageNumber} = req.body
-    intercept(cat.Page.findAndCountAll({
+    const result = await  intercept(cat.Page.findAndCountAll({
       attributes:['id','name','width','height','img'],
       limit:Number(pageSize),
       offset:(pageNumber - 1) * pageSize,
@@ -37,9 +37,8 @@ router.post('/list',function(req, res, next){
       order:[
         ['createTime','DESC']
       ]
-    })).then(result=>{
-      res.send(result)
-    })
+    }))
+     res.send(result)
 })
 
 
@@ -54,10 +53,10 @@ router.post('/list',function(req, res, next){
  * @apiBody {String}  img   
  * @apiBody {String}  componentData   
  */
-router.post('/save',(req,res,next)=>{
+router.post('/save',async (req,res,next)=>{
   const { name,width,height,img,componentData } = req.body
   let configStr = JSON.stringify(componentData)
-  intercept(cat.Page.create({
+  const data = await intercept(cat.Page.create({
     name,
     componentData:configStr,
     width,
@@ -66,9 +65,8 @@ router.post('/save',(req,res,next)=>{
     del:0, 
   }),{
     msg:'保存成功'
-  }).then(data=>{
-    res.send(data)
   })
+  res.send(data)
 })
 
 /**
@@ -84,14 +82,13 @@ router.post('/save',(req,res,next)=>{
  * @apiSuccess {String}   img 页面预览图
  * @apiSuccess {Object}   componentData 页面配置
  */
-router.post('/detail',(req,res,next)=>{
+router.post('/detail',async (req,res,next)=>{
   const { id } = req.body
-  intercept(cat.Page.findByPk(id)).then(data=>{
-    if(data.code == 0){
-      data.data.componentData = JSON.parse(data.data.componentData)
-    }
-    res.send(data)
-  })
+  const data = await intercept(cat.Page.findByPk(id))
+  if(data.code == 0){
+    data.data.componentData = JSON.parse(data.data.componentData)
+  }
+  res.send(data)
 })
 /**
  * @api {post} /biz/Page/update updatePage
@@ -104,10 +101,10 @@ router.post('/detail',(req,res,next)=>{
  * @apiBody {String}  img   
  * @apiBody {String}  componentData  
  */
-router.post('/update',(req,res,next)=>{
+router.post('/update',async (req,res,next)=>{
   const { name,width,height,img,componentData,id } = req.body
   let configStr = JSON.stringify(componentData)
-  intercept(cat.Page.update({
+  const data = await intercept(cat.Page.update({
     name,
     componentData:configStr,
     width,
@@ -124,9 +121,8 @@ router.post('/update',(req,res,next)=>{
     }
   }),{
     msg:'修改成功'
-  }).then(data=>{
-    res.send(data)
   })
+  res.send(data)
 })
 /**
  * @api {post} /biz/Page/delete deletePage
@@ -134,10 +130,9 @@ router.post('/update',(req,res,next)=>{
  * @apiGroup Page
  * @apiBody {Number} id 
  */
-router.post('/delete',(req,res,next)=>{
+router.post('/delete',async (req,res,next)=>{
   const { id } = req.body
-
-  intercept(cat.Page.update({
+  const data =  intercept(cat.Page.update({
     del:1
   },{
     where:{
@@ -150,8 +145,7 @@ router.post('/delete',(req,res,next)=>{
     }
   }),{
     msg:'删除成功'
-  }).then(data=>{
-    res.send(data)
   })
+  res.send(data)
 })
 module.exports = router;

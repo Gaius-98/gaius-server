@@ -18,9 +18,9 @@ const { Op } = require("sequelize");
  * @apiSuccess {String}   rows.name 表单名称
  * @apiSuccess {Number}   count 表单配置总数
  */
-router.post('/list',function(req, res, next){
+router.post('/list',async (req, res, next)=>{
     const { keyword,pageSize,pageNumber} = req.body
-    intercept(cat.Form.findAndCountAll({
+    const result = await intercept(cat.Form.findAndCountAll({
       attributes:['id','list','formProp','name','img'],
       limit:Number(pageSize),
       offset:(pageNumber - 1) * pageSize,
@@ -35,9 +35,8 @@ router.post('/list',function(req, res, next){
       order:[
         ['createTime','DESC']
       ]
-    })).then(result=>{
-      res.send(result)
-    })
+    }))
+    res.send(result)
 })
 
 
@@ -51,11 +50,11 @@ router.post('/list',function(req, res, next){
  * @apiBody {String} formProp 
  * @apiBody {String} img     
  */
-router.post('/save',(req,res,next)=>{
+router.post('/save', async (req,res,next)=>{
   const { name,list,formProp,img } = req.body
   let configStr = JSON.stringify(list)
   let formConfigStr = JSON.stringify(formProp)
-  intercept(cat.Form.create({
+  const data = await intercept(cat.Form.create({
     name,
     list:configStr,
     formProp:formConfigStr,
@@ -63,9 +62,8 @@ router.post('/save',(req,res,next)=>{
     del:0, 
   }),{
     msg:'保存成功'
-  }).then(data=>{
-    res.send(data)
   })
+  res.send(data)
 })
 
 /**
@@ -79,15 +77,16 @@ router.post('/save',(req,res,next)=>{
  * @apiSuccess {Object}   formProp 表单整体配置
  * @apiSuccess {String}   name 表单名称  
  */
-router.post('/detail',(req,res,next)=>{
+router.post('/detail',async (req,res,next)=>{
   const { id } = req.body
-  intercept(cat.Form.findByPk(id)).then(data=>{
-    if(data.code == 0){
-      data.data.list = JSON.parse(data.data.list)
-      data.data.formProp = JSON.parse(data.data.formProp)
-    }
-    res.send(data)
-  })
+  const data =  await intercept(cat.Form.findByPk(id,{
+    attributes:['id','list','formProp','name','img']
+  }))
+  if(data.code == 0 && data.data?.list){
+    data.data.list = JSON.parse(data.data.list)
+    data.data.formProp = JSON.parse(data.data.formProp)
+  }
+  res.send(data)
 })
 /**
  * @api {post} /biz/form/update updateForm
@@ -99,11 +98,11 @@ router.post('/detail',(req,res,next)=>{
  * @apiBody {String} formProp 
  * @apiBody {String} img    
  */
-router.post('/update',(req,res,next)=>{
+router.post('/update',async (req,res,next)=>{
   const { name,list,id,formProp,img } = req.body
   let configStr = JSON.stringify(list)
   let formConfigStr = JSON.stringify(formProp)
-  intercept(cat.Form.update({
+  const data = await intercept(cat.Form.update({
     name,
     list:configStr,
     formProp:formConfigStr,
@@ -119,9 +118,8 @@ router.post('/update',(req,res,next)=>{
     }
   }),{
     msg:'修改成功'
-  }).then(data=>{
-    res.send(data)
   })
+  res.send(data)
 })
 /**
  * @api {post} /biz/form/delete deleteForm
@@ -129,10 +127,9 @@ router.post('/update',(req,res,next)=>{
  * @apiGroup Form
  * @apiBody {Number} id 
  */
-router.post('/delete',(req,res,next)=>{
+router.post('/delete',async (req,res,next)=>{
   const { id } = req.body
-
-  intercept(cat.Form.update({
+  const data = await intercept(cat.Form.update({
     del:1
   },{
     where:{
@@ -145,8 +142,7 @@ router.post('/delete',(req,res,next)=>{
     }
   }),{
     msg:'删除成功'
-  }).then(data=>{
-    res.send(data)
   })
+  res.send(data)
 })
 module.exports = router;
