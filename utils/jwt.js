@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken')
-const env = require('../env.json')
+const env = require('../.env.json')
 const cat = require('./cat')
-const intercept = require('./intercept')
 const secretKey = env.JWT.secretKey
 module.exports = {
     sign: (payload,opt)=>{

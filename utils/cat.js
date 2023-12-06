@@ -1,5 +1,5 @@
 
-const env = require('../env.json')
+const env = require('../.env.json')
 const { Sequelize } = require('sequelize')
 const path = require('path')
 const fs = require('fs')
