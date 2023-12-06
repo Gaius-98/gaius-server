@@ -3,6 +3,7 @@ var router = express.Router();
 var cat = require('../../utils/cat')
 const intercept = require('../../utils/intercept')
 const { Op } = require("sequelize");
+const jwt = require('../../utils/jwt')
 /**
  * @api {post} /biz/Page/list getPageList
  * @apiName GetPageList
@@ -22,6 +23,7 @@ const { Op } = require("sequelize");
  */
 router.post('/list',async (req, res, next)=>{
     const { keyword,pageSize,pageNumber} = req.body
+    const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
     const result = await  intercept(cat.Page.findAndCountAll({
       attributes:['id','name','width','height','img'],
       limit:Number(pageSize),
@@ -32,6 +34,9 @@ router.post('/list',async (req, res, next)=>{
         },
         del:{
           [Op.eq]:0
+        },
+        creator:{
+          [Op.eq]:username
         }
       },
       order:[
@@ -56,6 +61,7 @@ router.post('/list',async (req, res, next)=>{
 router.post('/save',async (req,res,next)=>{
   const { name,width,height,img,componentData } = req.body
   let configStr = JSON.stringify(componentData)
+  const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
   const data = await intercept(cat.Page.create({
     name,
     componentData:configStr,
@@ -63,6 +69,7 @@ router.post('/save',async (req,res,next)=>{
     height,
     img,
     del:0, 
+    creator:username
   }),{
     msg:'保存成功'
   })
@@ -84,7 +91,14 @@ router.post('/save',async (req,res,next)=>{
  */
 router.post('/detail',async (req,res,next)=>{
   const { id } = req.body
-  const data = await intercept(cat.Page.findByPk(id))
+  const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
+  const data = await intercept(cat.Page.findByPk(id,{
+    where:{
+      creator:{
+        [Op.eq]:username
+      }
+    }
+  }))
   if(data.code == 0){
     data.data.componentData = JSON.parse(data.data.componentData)
   }
@@ -104,12 +118,13 @@ router.post('/detail',async (req,res,next)=>{
 router.post('/update',async (req,res,next)=>{
   const { name,width,height,img,componentData,id } = req.body
   let configStr = JSON.stringify(componentData)
+  const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
   const data = await intercept(cat.Page.update({
     name,
     componentData:configStr,
     width,
     height,
-    img,
+    img
   },{
     where:{
       id:{
@@ -117,6 +132,9 @@ router.post('/update',async (req,res,next)=>{
       },
       del:{
         [Op.eq]:0
+      },
+      creator:{
+        [Op.eq]:username
       }
     }
   }),{
@@ -132,6 +150,7 @@ router.post('/update',async (req,res,next)=>{
  */
 router.post('/delete',async (req,res,next)=>{
   const { id } = req.body
+  const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
   const data =  intercept(cat.Page.update({
     del:1
   },{
@@ -141,6 +160,9 @@ router.post('/delete',async (req,res,next)=>{
       },
       del:{
         [Op.eq]:0
+      },
+      creator:{
+        [Op.eq]:username
       }
     }
   }),{

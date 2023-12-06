@@ -24,6 +24,9 @@ const createPage = (sequelize) =>{
     componentData:{
       type:DataTypes.TEXT
     },
+    creator:{
+      type:DataTypes.STRING
+    },
     createTime:{
       type:DataTypes.DATE(6),
       defaultValue: DataTypes.NOW

@@ -36,11 +36,22 @@ module.exports = {
                             msg:'您没有对应权限'
                         }))
                     })
-                    
                 }
             })
         })
         
+        return p
+    },
+    getJwtUser:(jwtStr) =>{
+        let p = new Promise((resolve,reject)=>{
+                jwt.verify(jwtStr,secretKey,(err,data)=>{
+                    if(err){
+                        resolve(null)
+                    }else{
+                        resolve(data)
+                    }
+            })
+        })
         return p
     }
 }

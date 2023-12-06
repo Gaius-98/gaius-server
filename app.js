@@ -30,6 +30,7 @@ router.use((req,res,next)=>{
   if(whiteList.some(item=>(url.includes(item)))){
     next()
   }else {
+    
     jwt.verify(req.cookies.gaiusToken).then(()=>{
       next()
     }).catch(err=>{

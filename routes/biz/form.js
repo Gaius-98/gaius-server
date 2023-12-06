@@ -3,6 +3,7 @@ var router = express.Router();
 var cat = require('../../utils/cat')
 const intercept = require('../../utils/intercept')
 const { Op } = require("sequelize");
+const jwt = require('../../utils/jwt')
 /**
  * @api {post} /biz/form/list getFormList
  * @apiName GetFormList
@@ -20,6 +21,7 @@ const { Op } = require("sequelize");
  */
 router.post('/list',async (req, res, next)=>{
     const { keyword,pageSize,pageNumber} = req.body
+    const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
     const result = await intercept(cat.Form.findAndCountAll({
       attributes:['id','list','formProp','name','img'],
       limit:Number(pageSize),
@@ -30,6 +32,9 @@ router.post('/list',async (req, res, next)=>{
         },
         del:{
           [Op.eq]:0
+        },
+        creator:{
+          [Op.eq]:username
         }
       },
       order:[
@@ -54,12 +59,14 @@ router.post('/save', async (req,res,next)=>{
   const { name,list,formProp,img } = req.body
   let configStr = JSON.stringify(list)
   let formConfigStr = JSON.stringify(formProp)
+  const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
   const data = await intercept(cat.Form.create({
     name,
     list:configStr,
     formProp:formConfigStr,
     img,
     del:0, 
+    creator:username
   }),{
     msg:'保存成功'
   })
@@ -79,8 +86,14 @@ router.post('/save', async (req,res,next)=>{
  */
 router.post('/detail',async (req,res,next)=>{
   const { id } = req.body
+  const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
   const data =  await intercept(cat.Form.findByPk(id,{
-    attributes:['id','list','formProp','name','img']
+    attributes:['id','list','formProp','name','img'],
+    where:{
+      creator:{
+        [Op.eq]:username
+      }
+    }
   }))
   if(data.code == 0 && data.data?.list){
     data.data.list = JSON.parse(data.data.list)
@@ -102,11 +115,12 @@ router.post('/update',async (req,res,next)=>{
   const { name,list,id,formProp,img } = req.body
   let configStr = JSON.stringify(list)
   let formConfigStr = JSON.stringify(formProp)
+  const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
   const data = await intercept(cat.Form.update({
     name,
     list:configStr,
     formProp:formConfigStr,
-    img
+    img,
   },{
     where:{
       id:{
@@ -114,6 +128,9 @@ router.post('/update',async (req,res,next)=>{
       },
       del:{
         [Op.eq]:0
+      },
+      creator:{
+        [Op.eq]:username
       }
     }
   }),{
@@ -129,6 +146,7 @@ router.post('/update',async (req,res,next)=>{
  */
 router.post('/delete',async (req,res,next)=>{
   const { id } = req.body
+  const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
   const data = await intercept(cat.Form.update({
     del:1
   },{
@@ -138,6 +156,9 @@ router.post('/delete',async (req,res,next)=>{
       },
       del:{
         [Op.eq]:0
+      },
+      creator:{
+        [Op.eq]:username
       }
     }
   }),{
