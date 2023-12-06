@@ -87,11 +87,17 @@ router.post('/save', async (req,res,next)=>{
 router.post('/detail',async (req,res,next)=>{
   const { id } = req.body
   const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
-  const data =  await intercept(cat.Form.findByPk(id,{
+  const data =  await intercept(cat.Form.findOne({
     attributes:['id','list','formProp','name','img'],
     where:{
       creator:{
         [Op.eq]:username
+      },
+      del:{
+        [Op.eq]:0
+      },
+      id:{
+        [Op.eq]:id
       }
     }
   }))
