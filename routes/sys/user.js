@@ -70,7 +70,7 @@ router.post('/login',async (req,res,next)=>{
         expiresIn:'1h'
       })
       res.cookie('gaiusToken',token,{
-        httpOnly:true
+        maxAge:1000 * 60
       })
       res.send({
         code:0,
