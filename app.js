@@ -24,7 +24,8 @@ router.use((req,res,next)=>{
     '/sys/user/register',
     '/sys/user/captcha',
     '/doc',
-    '/assets'
+    '/assets',
+    '/sys/access/record'
   ]
   const { url } = req
   if(whiteList.some(item=>(url.includes(item)))){
