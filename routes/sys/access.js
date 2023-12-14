@@ -24,7 +24,7 @@ function getClientIp(req) {
 router.get('/record',async (req,res,next)=>{
   const ip = getClientIp(req)
   const addressInfo = geoip.lookup(ip)
-  let address = addressInfo ? `${addressInfo.country}${addressInfo.area}${addressInfo.city}` :''
+  let address = addressInfo ? `${addressInfo.country}|${addressInfo.city}` :''
   const data = await intercept(cat.Access.create({
     ip,
     address
