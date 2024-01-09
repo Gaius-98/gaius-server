@@ -26,7 +26,8 @@ router.use((req,res,next)=>{
     '/doc',
     '/assets',
     '/sys/access/reco',
-    '/index'
+    '/index',
+    '/biz/page/detail'
   ]
   const { url } = req
   if(whiteList.some(item=>(url.includes(item)))){
