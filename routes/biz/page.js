@@ -91,13 +91,10 @@ router.post('/save',async (req,res,next)=>{
  */
 router.post('/detail',async (req,res,next)=>{
   const { id } = req.body
-  const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
+  // const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
   const data = await intercept(cat.Page.findOne({
     attributes:['id','name','img','width','height','componentData'],
     where:{
-      creator:{
-        [Op.eq]:username
-      },
       del:{
         [Op.eq]:0
       },
