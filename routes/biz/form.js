@@ -172,4 +172,28 @@ router.post('/delete',async (req,res,next)=>{
   })
   res.send(data)
 })
+
+/**
+ * @api {post} /biz/form/listInfo listInfo
+ * @apiName listInfo
+ * @apiGroup Form 
+ */
+router.post('/listInfo',async (req,res,next)=>{
+  const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
+  const data = await intercept(cat.Form.findAll({
+    attributes:['id','name'],
+  },{
+    where:{
+      del:{
+        [Op.eq]:0
+      },
+      creator:{
+        [Op.eq]:username
+      }
+    }
+  }),{
+    msg:'查询成功'
+  })
+  res.send(data)
+})
 module.exports = router;
