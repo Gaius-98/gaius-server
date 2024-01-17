@@ -182,7 +182,6 @@ router.post('/listInfo',async (req,res,next)=>{
   const { username } = await jwt.getJwtUser(req.cookies.gaiusToken)
   const data = await intercept(cat.Form.findAll({
     attributes:['id','name'],
-  },{
     where:{
       del:{
         [Op.eq]:0
