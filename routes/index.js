@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request')
+var axios = require('axios')
 /**
  * @api {post} /index/proxy proxy
  * @apiName proxy
@@ -13,20 +14,21 @@ var request = require('request')
  */
 router.post('/proxy', (req, res, next)=>{
   const {url,method,data} = req.body
-  request({
+  axios({
     url,
     method,
-    data
-  },(err,resData,body)=>{
-    if(err){
-      res.send({
-        code:500,
-        msg:err,
-        data:{}
-      })
-    }else{
-      res.send(JSON.parse(body))
-    }
+    headers:{
+      Cookie:`gaiusToken=${req.cookies.gaiusToken}`
+    },
+    [method == 'get' ? 'params' :'data']:data,
+  }).then((resData)=>{
+    res.send(JSON.stringify(resData.data))
+    
+  }).catch(err=>{
+    res.send({
+      code:500,
+      msg:err
+    })
   })
 
 });
