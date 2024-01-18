@@ -4,13 +4,13 @@ const createAccess = (sequelize) =>{
     // 在这里定义模型属性
     id: {
       type: DataTypes.STRING,
+      primaryKey:true
     },
     ip: {
       type: DataTypes.STRING,
     },
     address:{
       type:DataTypes.STRING,
-      primaryKey:true
     },
     accessTime:{
       type:DataTypes.DATE(6),
