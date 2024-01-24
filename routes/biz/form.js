@@ -4,6 +4,8 @@ var cat = require('../../utils/cat')
 const intercept = require('../../utils/intercept')
 const { Op } = require("sequelize");
 const jwt = require('../../utils/jwt')
+const createFormSfc = require('./form-utils')
+const prettier = require('prettier');
 /**
  * @api {post} /biz/form/list getFormList
  * @apiName GetFormList
@@ -193,6 +195,24 @@ router.post('/listInfo',async (req,res,next)=>{
   }),{
     msg:'查询成功'
   })
+  res.send(data)
+})
+
+/**
+ * @api {post} /biz/form/downloadForm downloadForm
+ * @apiName downloadForm
+ * @apiGroup Form 
+ * @apiBody {Object} config
+ * @apiBody {String} config.list 表单组件构成
+ * @apiBody {String} config.formProp 表单整体配置
+ * @apiBody {String} config.name 表单名称
+ */
+router.post('/downloadForm',async (req,res,next)=>{
+  const { config } = req.body
+  let text = createFormSfc(config)
+  const data = await intercept(prettier.format(text,{
+    parser:'vue'
+  }))
   res.send(data)
 })
 module.exports = router;

@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var request = require('request')
 var axios = require('axios')
 /**
  * @api {post} /index/proxy proxy
