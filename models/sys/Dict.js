@@ -23,7 +23,10 @@ const createDict = (sequelize) =>{
     },
     description:{
         type: DataTypes.STRING,
-    }
+    },
+    del:{
+      type:DataTypes.NUMBER
+    },
   }, {
     tableName:'gaius_sys_dict',
     timestamps: false,
